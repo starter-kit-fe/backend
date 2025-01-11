@@ -1,10 +1,10 @@
 package app
 
 import (
-	"time"
 	"admin/internal/middleware"
 	"admin/pkg/jwt"
 	"admin/pkg/response"
+	"time"
 
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
@@ -25,7 +25,7 @@ func (a *App) initRoutes() {
 	{
 		// 版本信息
 		v1.GET("/version", a.handlers.App.Version)
-		v1.GET("/setup", a.handlers.App.Version)
+		v1.GET("/setup", a.handlers.App.Setup)
 		// 用户相关路由
 		v1.POST("/signup", a.handlers.User.Signup)
 		v1.POST("/signin", a.handlers.User.Signin)

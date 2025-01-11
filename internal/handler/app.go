@@ -22,5 +22,6 @@ func (h *AppHandler) Version(c *gin.Context) {
 
 // Version 获取版本信息
 func (h *AppHandler) Setup(c *gin.Context) {
+
 	response.Success(c, h.appService.Version())
 }
