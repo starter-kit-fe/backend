@@ -1,10 +1,6 @@
 package service
 
 import (
-	"context"
-	"fmt"
-	"strings"
-	"time"
 	"admin/internal/constant"
 	"admin/internal/dto"
 	"admin/internal/model"
@@ -14,6 +10,10 @@ import (
 	"admin/pkg/google"
 	"admin/pkg/jwt"
 	"admin/pkg/totp"
+	"context"
+	"fmt"
+	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
@@ -176,7 +176,6 @@ func (s *userService) Signup(ctx context.Context, req *dto.SignupRequest, ip str
 	if err := s.verifyCloudflareToken(ctx, req.Token, ip); err != nil {
 		return "", err
 	}
-
 	code, err := s.rdb.Get(ctx, req.Email).Result()
 	if err != nil {
 		if err == redis.Nil {
