@@ -2,15 +2,19 @@ package app
 
 import (
 	"admin/internal/model"
+	"fmt"
 	"log"
+
+	"gorm.io/gorm"
 )
 
-func (a *App) Init() {
-	a.migrate()
-	a.initApi()
-	a.init()
-
+func (a *App) Setup() {
+	// 检查数据库是否需要初始化
+	if err := a.checkAndMigrateIfNeeded(); err != nil {
+		log.Fatalf("Failed to setup database: %v", err)
+	}
 }
+
 func (a *App) initApi() {
 	routes := a.router.Routes()
 	for _, route := range routes {
@@ -24,6 +28,54 @@ func (a *App) initApi() {
 			log.Fatal(err)
 		}
 	}
+}
+
+func (a *App) checkAndMigrateIfNeeded() error {
+	// 尝试检查表是否存在
+	tableExists := a.db.Migrator().HasTable(&model.User{})
+
+	if !tableExists {
+		log.Println("Tables don't exist, performing initial migration...")
+		// 执行迁移
+		a.migrate()
+		// 执行初始化
+		a.initApi()
+		a.init()
+		log.Println("Initial setup completed successfully")
+		return nil
+	}
+
+	// 如果表存在，检查是否需要初始化数据
+	needsInit, err := a.needsInitialization()
+	if err != nil {
+		return fmt.Errorf("failed to check initialization status: %v", err)
+	}
+
+	if needsInit {
+		log.Println("Tables exist but data initialization needed...")
+		a.initApi()
+		a.init()
+		log.Println("Data initialization completed successfully")
+	} else {
+		log.Println("Database already initialized, skipping setup")
+	}
+
+	return nil
+}
+
+func (a *App) needsInitialization() (bool, error) {
+	var apiCount, lookupCount int64
+
+	if err := a.db.Model(&model.Api{}).Count(&apiCount).Error; err != nil {
+		return false, fmt.Errorf("failed to count APIs: %v", err)
+	}
+
+	if err := a.db.Model(&model.Lookup{}).Count(&lookupCount).Error; err != nil {
+		return false, fmt.Errorf("failed to count lookups: %v", err)
+	}
+
+	// 如果任一表没有数据，则需要初始化
+	return apiCount == 0 || lookupCount == 0, nil
 }
 
 func (a *App) migrate() {
@@ -239,9 +291,19 @@ func (a *App) init() {
 		},
 	}
 
-	for _, it := range lookups {
-		if err := a.repos.Lookup.Create(it); err != nil {
-			log.Printf("failed to initialize lookup data: %v", err)
+	err := a.db.Transaction(func(tx *gorm.DB) error {
+		for _, it := range lookups {
+			if err := tx.FirstOrCreate(it, &model.Lookup{
+				GroupValue: it.GroupValue,
+				EntryValue: it.EntryValue,
+			}).Error; err != nil {
+				return fmt.Errorf("failed to create lookup: %v", err)
+			}
 		}
+		return nil
+	})
+
+	if err != nil {
+		fmt.Errorf("lookup initialization failed: %v", err)
 	}
 }

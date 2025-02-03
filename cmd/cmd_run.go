@@ -25,7 +25,6 @@ func init() {
 func run(cmd *cobra.Command, args []string) {
 	// 初始化app
 	application := app.NewApp(params)
-	// application.Init()
 	// 允许
 	if err := application.Run(addr); err != nil {
 		log.Fatalf("%v", err)
