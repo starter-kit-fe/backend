@@ -58,7 +58,7 @@ func NewApp(params *AppMaker) *App {
 	a.initRepositories()
 	// 初始化services
 	a.initServices()
-	// 初始化handlers
+	// 初始化handlers∏
 	a.initHandlers()
 	// 初始化中间件
 	a.initMiddleware()

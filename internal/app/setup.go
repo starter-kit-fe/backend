@@ -105,7 +105,6 @@ func (a *App) init() error {
 	if err := json.Unmarshal(LookUpByte, &lookups); err != nil {
 		return fmt.Errorf("failed to unmarshal lookup JSON: %v", err)
 	}
-
 	return a.db.Transaction(func(tx *gorm.DB) error {
 		for _, it := range lookups {
 			if err := tx.FirstOrCreate(&it, &model.Lookup{
