@@ -47,6 +47,7 @@ func (a *App) initRoutes() {
 			lookup.GET("/groups", a.handlers.Lookup.Groups)
 			lookup.GET("/group/:group_value", a.handlers.Lookup.Group)
 			lookup.PATCH("/status/:id/:status", a.handlers.Lookup.Status)
+
 			lookup.POST("", a.handlers.Lookup.POST)
 			lookup.DELETE("/:id", a.handlers.Lookup.DELETE)
 			lookup.PUT("/:id", a.handlers.Lookup.PUT)
@@ -77,7 +78,7 @@ func (a *App) initMiddleware() {
 	a.router.Use(gin.Recovery())
 	config := middleware.RateLimitConfig{
 		MaxRequests:     100,       // 每秒100个请求
-		MaxQueryParams:  10,        // 最多5个查询参数
+		MaxQueryParams:  10,        // 最多10个查询参数
 		MaxParamLength:  500,       // 参数最大长度
 		CleanupInterval: time.Hour, // 每小时清理一次
 	}

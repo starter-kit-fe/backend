@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"context"
-	"fmt"
 	"admin/internal/dto"
 	"admin/internal/model"
 	"admin/pkg/utils"
+	"context"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -173,7 +173,6 @@ func (s lookupRepository) FindLookupGroupsByValue(group_value string, params dto
 
 func (s lookupRepository) FindLookupGroups(params *dto.GroupsQueryRequest) (*dto.GroupsQueryResponse, error) {
 	var response dto.GroupsQueryResponse
-
 	query := s.db.Model(&model.Lookup{})
 	// 删除默认查询
 	if params.Status != nil && *params.Status != 0 {

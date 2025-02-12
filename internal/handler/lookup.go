@@ -113,6 +113,12 @@ func (s *LookupHandler) Groups(c *gin.Context) {
 		response.Fail(c, err.Error())
 		return
 	}
+	if params.Size == 0 {
+		params.Size = 10
+	}
+	if params.Page == 0 {
+		params.Page = 1
+	}
 	data, err := s.lookUpService.QueryGroups(params)
 	if err != nil {
 		response.Fail(c, err.Error())
