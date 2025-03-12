@@ -1,14 +1,18 @@
 package email
 
 import (
+	"admin/pkg/utils"
 	"bytes"
+	_ "embed"
 	"fmt"
 	"html/template"
 	"time"
-	"admin/pkg/utils"
 
 	"github.com/resend/resend-go/v2"
 )
+
+//go:embed verification_email_template.html
+var verificationEmailTemplate string
 
 // Config 存储邮件服务配置
 type Config struct {
@@ -128,59 +132,3 @@ func validateCode(code string) error {
 	}
 	return nil
 }
-
-// 验证码邮件模板
-const verificationEmailTemplate = `
-<table role="presentation" style="width:100%;max-width:405px;margin:0 auto;border-spacing:0">
-    <tbody>
-        <tr>
-            <td>
-                <p style="font-size:18px;margin:0;line-height:32px;text-align:center">
-                    您的
-                    <a href="https://{{.Domain}}" style="font-weight:bold">
-                        {{.Domain}}
-                    </a>
-                    验证码
-                </p>
-                <p style="margin-top:20px;margin-bottom:0;background:#f6f6f6;height:40px;line-height:40px;font-size:20px;color:#000000;letter-spacing:5px;font-weight:bold;text-align:center">
-                    {{.Code}}    
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p style="font-size:12px;margin-top:10px;margin-bottom:0;color:#13151a">
-                    {{.Timestamp}}
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p style="font-size:12px;margin-top:20px;margin-bottom:0;color:#13151a">
-                    您的验证码有效期为五分钟。
-                </p>
-            </td>
-        </tr>
-        <tr style="margin:0;padding:0;border:none">
-            <td style="margin:0;padding:0;border:none">
-                <p style="font-size:12px;border-bottom:1px solid #e6e8eb;margin-top:10px;padding-bottom:20px;color:#13151a;padding-top:0;margin-bottom:0">
-                    不要把您的验证码告诉任何人
-                </p>
-            </td>
-        </tr>
-        <tr style="margin:0;padding:0;border:none">
-            <td style="padding:0;margin:0;border:none">
-                <div>
-                    <p style="font-size:12px;padding-top:20px;line-height:18px;color:#848b96;margin:0;border:none">
-                        不是您发送的验证码？投诉建议请联系
-                        <a href="mailto:support@tigerzh.com"
-                            style="text-decoration:none;color:#0059da;font-weight:bold"
-                            target="_blank">
-                            客服中心
-                        </a>
-                    </p>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>`
