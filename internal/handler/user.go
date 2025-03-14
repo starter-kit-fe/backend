@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"time"
 	"admin/internal/constant"
 	"admin/internal/dto"
 	"admin/internal/service"
 	"admin/pkg/response"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +21,24 @@ type UserHandler struct {
 func NewUserHandler(userService service.UserService) *UserHandler {
 	return &UserHandler{userService: userService}
 }
-
+func (h *UserHandler) GetRouters(c *gin.Context) {
+	userIdStr, exists := c.Get("userId")
+	if !exists {
+		response.FailWithCode(c, response.UNAUTHORIZED)
+	}
+	userID, ok := userIdStr.(uint)
+	if !ok {
+		response.FailWithCode(c, response.UNAUTHORIZED)
+		return // 确保在类型断言失败时返回
+	}
+	user, err := h.userService.GetUserRouters(uint(userID))
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, user)
+	// c.JSON(http.StatusOK, user)
+}
 func (h *UserHandler) GoogleSignin(c *gin.Context) {
 	var params dto.GoogleSigninRequest
 	if err := c.ShouldBindUri(&params); err != nil {

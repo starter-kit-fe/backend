@@ -38,6 +38,7 @@ func (a *App) initRoutes() {
 		users.Use(AuthMiddleware)
 		{
 			users.GET("/info", a.handlers.User.GetUser)
+			users.GET("/routes", a.handlers.User.GetRouters)
 			users.GET("/signout", a.handlers.User.Signout)
 		}
 

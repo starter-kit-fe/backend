@@ -34,3 +34,23 @@ type UserResponse struct {
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }
+type UserRoutes = []RouterItem
+
+type RouterItem struct {
+	Name       string       `json:"name"`
+	Path       string       `json:"path"`
+	Hidden     bool         `json:"hidden"`
+	Redirect   string       `json:"redirect,omitempty"`
+	Component  string       `json:"component"`
+	AlwaysShow bool         `json:"alwaysShow,omitempty"`
+	Meta       Meta         `json:"meta"`
+	Children   []RouterItem `json:"children,omitempty"`
+}
+
+// Meta contains the metadata for menu items
+type Meta struct {
+	Title   string      `json:"title"`
+	Icon    string      `json:"icon"`
+	NoCache bool        `json:"noCache"`
+	Link    interface{} `json:"link"`
+}

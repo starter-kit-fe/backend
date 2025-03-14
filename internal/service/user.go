@@ -11,9 +11,12 @@ import (
 	"admin/pkg/jwt"
 	"admin/pkg/totp"
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
+
+	_ "embed"
 
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
@@ -25,6 +28,9 @@ const (
 	verificationCodeTTL = 5 * time.Minute
 )
 
+//go:embed route.json
+var routeData []byte
+
 type UserService interface {
 	GoogleSignin(ctx context.Context, token string) (string, error)
 	Signout(ctx context.Context, id uint) error
@@ -33,6 +39,7 @@ type UserService interface {
 	Signup(ctx context.Context, req *dto.SignupRequest, ip string) (string, error)
 	Signin(ctx context.Context, req *dto.SigninRequest, ip string) (string, error)
 	GetUserByID(id uint) (*dto.UserResponse, error)
+	GetUserRouters(id uint) (*dto.UserRoutes, error)
 }
 
 type userService struct {
@@ -65,6 +72,14 @@ func NewUserService(cfg UserServiceConfig) *userService {
 		rdb:          cfg.RDB,
 		jwt:          cfg.JWT,
 	}
+}
+
+func (s *userService) GetUserRouters(id uint) (*dto.UserRoutes, error) {
+	var routes dto.UserRoutes
+	if err := json.Unmarshal(routeData, &routes); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal routes: %v", err)
+	}
+	return &routes, nil
 }
 
 func (s *userService) GoogleSignin(ctx context.Context, token string) (string, error) {
