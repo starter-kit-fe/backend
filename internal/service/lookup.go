@@ -1,10 +1,10 @@
 package service
 
 import (
-	"context"
 	"admin/internal/dto"
 	"admin/internal/model"
 	"admin/internal/repository"
+	"context"
 )
 
 type LookupService interface {
@@ -15,6 +15,7 @@ type LookupService interface {
 	Status(ctx context.Context, params *dto.LookupStatus) error
 	QueryGroup(group_value string, params dto.ListQueryRequest) (*dto.GroupQueryResponse, error)
 	QueryGroups(params dto.GroupsQueryRequest) (*dto.GroupsQueryResponse, error)
+	Sort(params dto.LookupSortRequest) error
 }
 
 type lookUpService struct {
@@ -82,4 +83,9 @@ func (s *lookUpService) QueryGroup(group_value string, params dto.ListQueryReque
 // 修正方法名，使其与接口一致
 func (s *lookUpService) QueryGroups(params dto.GroupsQueryRequest) (*dto.GroupsQueryResponse, error) {
 	return s.lookupRepo.FindLookupGroups(&params)
+}
+
+// 修正方法名，使其与接口一致
+func (s *lookUpService) Sort(params dto.LookupSortRequest) error {
+	return s.lookupRepo.Sort(&params)
 }

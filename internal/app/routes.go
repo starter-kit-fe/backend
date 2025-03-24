@@ -48,7 +48,7 @@ func (a *App) initRoutes() {
 			lookup.GET("/groups", a.handlers.Lookup.Groups)
 			lookup.GET("/group/:group_value", a.handlers.Lookup.Group)
 			lookup.PATCH("/status/:id/:status", a.handlers.Lookup.Status)
-
+			lookup.PUT("/sort", a.handlers.Lookup.Sort)
 			lookup.POST("", a.handlers.Lookup.POST)
 			lookup.DELETE("/:id", a.handlers.Lookup.DELETE)
 			lookup.PUT("/:id", a.handlers.Lookup.PUT)

@@ -4,6 +4,12 @@ import (
 	"time"
 )
 
+type LookupSortRequest struct {
+	From string `json:"from" binding:"required"`
+	To   string `json:"to" binding:"required"`
+	List []GroupQueryResponseItem
+}
+
 type LookupGetIdRequest struct {
 	ID uint `uri:"id" binding:"required"`
 }

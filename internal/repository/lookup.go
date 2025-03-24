@@ -18,6 +18,7 @@ type LookupRepository interface {
 	Status(ctx context.Context, params *dto.LookupStatus) error
 	FindLookupGroupsByValue(group_value string, params dto.ListQueryRequest) (*dto.GroupQueryResponse, error)
 	FindLookupGroups(params *dto.GroupsQueryRequest) (*dto.GroupsQueryResponse, error)
+	Sort(params *dto.LookupSortRequest) error
 }
 
 type lookupRepository struct {
@@ -206,4 +207,25 @@ func (s lookupRepository) FindLookupGroups(params *dto.GroupsQueryRequest) (*dto
 	}
 	response.Page = params.Page
 	return &response, nil
+}
+
+func (s lookupRepository) Sort(params *dto.LookupSortRequest) error {
+	tx := s.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	for i, it := range params.List {
+		if err := tx.Model(&model.Lookup{}).
+			Where("id = ?", it.ID).
+			Update("sort_order", i+1).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
 }

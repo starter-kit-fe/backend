@@ -16,6 +16,20 @@ func NewLookupHandler(lookUpService service.LookupService) *LookupHandler {
 	return &LookupHandler{lookUpService: lookUpService}
 }
 
+func (s *LookupHandler) Sort(c *gin.Context) {
+	var params dto.LookupSortRequest
+
+	if err := c.ShouldBindJSON(&params); err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	if err := s.lookUpService.Sort(params); err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, "ok")
+}
+
 func (s *LookupHandler) GET(c *gin.Context) {
 	var params dto.LookupGetIdRequest
 	if err := c.ShouldBindUri(&params); err != nil {
