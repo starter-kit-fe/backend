@@ -227,7 +227,7 @@
             },
             {
                 "name": "CacheList",
-                "path": "cacheList",
+                "path": "cache-list",
                 "hidden": false,
                 "component": "monitor/cache/list",
                 "meta": {
@@ -238,69 +238,5 @@
                 }
             }
         ]
-    },
-    {
-        "name": "Tool",
-        "path": "/tool",
-        "hidden": false,
-        "redirect": "noRedirect",
-        "component": "Layout",
-        "alwaysShow": true,
-        "meta": {
-            "title": "系统工具",
-            "icon": "tool",
-            "noCache": false,
-            "link": ""
-        },
-        "children": [
-            {
-                "name": "Build",
-                "path": "build",
-                "hidden": false,
-                "component": "tool/build/index",
-                "meta": {
-                    "title": "表单构建",
-                    "icon": "build",
-                    "noCache": false,
-                    "link": ""
-                }
-            },
-            {
-                "name": "Gen",
-                "path": "gen",
-                "hidden": false,
-                "component": "tool/gen/index",
-                "meta": {
-                    "title": "代码生成",
-                    "icon": "code",
-                    "noCache": false,
-                    "link": ""
-                }
-            },
-            {
-                "name": "Swagger",
-                "path": "swagger",
-                "hidden": false,
-                "component": "tool/swagger/index",
-                "meta": {
-                    "title": "系统接口",
-                    "icon": "swagger",
-                    "noCache": false,
-                    "link": ""
-                }
-            }
-        ]
-    },
-    {
-        "name": "Http://ruoyi.vip",
-        "path": "http://ruoyi.vip",
-        "hidden": false,
-        "component": "Layout",
-        "meta": {
-            "title": "若依官网",
-            "icon": "guide",
-            "noCache": false,
-            "link": "http://ruoyi.vip"
-        }
     }
 ]
