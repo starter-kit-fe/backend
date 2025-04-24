@@ -7,6 +7,7 @@ import (
 )
 
 func BuildBaseQuery(query *gorm.DB, params dto.ListQueryRequest) *gorm.DB {
+
 	if params.Status != nil && *params.Status != 0 {
 		query = query.Where("status = ?", params.Status)
 	}
@@ -19,5 +20,6 @@ func BuildBaseQuery(query *gorm.DB, params dto.ListQueryRequest) *gorm.DB {
 	if params.Sort != "" && params.Order != "" {
 		query = query.Order(params.Sort + " " + params.Order)
 	}
+
 	return query
 }

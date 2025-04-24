@@ -45,8 +45,9 @@ func (a *App) initRoutes() {
 		lookup := v1.Group("/lookup")
 		lookup.Use(AuthMiddleware)
 		{
-			lookup.GET("/groups", a.handlers.Lookup.Groups)
-			lookup.GET("/group/:group_value", a.handlers.Lookup.Group)
+			// 只对需要分页的接口应用分页中间件
+			lookup.GET("/groups", middleware.PaginationMiddleware(), a.handlers.Lookup.Groups)
+			lookup.GET("/group/:group_value", middleware.PaginationMiddleware(), a.handlers.Lookup.Group)
 			lookup.PATCH("/status/:id/:status", a.handlers.Lookup.Status)
 			lookup.PUT("/sort", a.handlers.Lookup.Sort)
 			lookup.POST("", a.handlers.Lookup.POST)

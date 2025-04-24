@@ -125,10 +125,9 @@ func (s lookupRepository) FindLookupGroupsByValue(group_value string, params dto
 	)
 	query := s.db.Model(&model.Lookup{})
 	query = query.Where("group_value = ?", group_value)
-	if params.Page != 0 && params.Size != 0 {
-		query = utils.BuildBaseQuery(query, params)
-		offset = (params.Page - 1) * params.Size
-	}
+	query = query.Order("sort_order asc")
+	query = utils.BuildBaseQuery(query, params)
+	offset = (params.Page - 1) * params.Size
 
 	if err := query.Count(&response.Total).Error; err != nil {
 		return nil, err
@@ -176,11 +175,12 @@ func (s lookupRepository) FindLookupGroups(params *dto.GroupsQueryRequest) (*dto
 	var response dto.GroupsQueryResponse
 	query := s.db.Model(&model.Lookup{})
 	// 删除默认查询
-	if params.Status != nil && *params.Status != 0 {
-		if *params.Status == 1 {
+	if params.Status != nil {
+		if *params.Status == 0 {
+			query = query.Where("status = 0")
+		} else if *params.Status == 1 {
 			query = query.Where("status = 1 or status = 3")
-		}
-		if *params.Status == 2 {
+		} else if *params.Status == 2 {
 			query = query.Where("status = 2")
 		}
 	}
