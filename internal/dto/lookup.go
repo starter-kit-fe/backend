@@ -61,11 +61,7 @@ type GroupQueryResponseItem struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-type GroupQueryResponse struct {
-	List  []GroupQueryResponseItem `json:"list"`
-	Total int64                    `json:"total"`
-	Page  uint                     `json:"page"`
-}
+type GroupQueryResponse = []GroupQueryResponseItem
 
 type GroupsQueryRequest struct {
 	ListQueryRequest

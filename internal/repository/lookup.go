@@ -16,7 +16,7 @@ type LookupRepository interface {
 	Update(id uint, params *model.Lookup) error
 	FindByID(id uint) (*model.Lookup, error)
 	Status(ctx context.Context, params *dto.LookupStatus) error
-	FindLookupGroupsByValue(group_value string, params dto.ListQueryRequest) (*dto.GroupQueryResponse, error)
+	FindLookupGroupsByValue(group_value string, params dto.ListQueryRequest) (dto.GroupQueryResponse, error)
 	FindLookupGroups(params *dto.GroupsQueryRequest) (*dto.GroupsQueryResponse, error)
 	Sort(params *dto.LookupSortRequest) error
 }
@@ -118,30 +118,34 @@ func (s lookupRepository) Status(ctx context.Context, params *dto.LookupStatus) 
 	return nil
 
 }
-func (s lookupRepository) FindLookupGroupsByValue(group_value string, params dto.ListQueryRequest) (*dto.GroupQueryResponse, error) {
+func (s lookupRepository) FindLookupGroupsByValue(group_value string, params dto.ListQueryRequest) (dto.GroupQueryResponse, error) {
 	var (
 		response dto.GroupQueryResponse
-		offset   uint
 	)
+	// 初始化 List 为空切片
+	response = make([]dto.GroupQueryResponseItem, 0)
+
 	query := s.db.Model(&model.Lookup{})
+	var statusMap = map[uint]string{
+		0: "status = 0",
+		2: "status = 2",
+	}
+	// 使用处
+	if params.Status != nil {
+		if condition, ok := statusMap[*params.Status]; ok {
+			query = query.Where(condition)
+		} else if *params.Status == 1 {
+			query = query.Where("status = 1 OR status = 3")
+		}
+	}
 	query = query.Where("group_value = ?", group_value)
 	query = query.Order("sort_order asc")
 	query = utils.BuildBaseQuery(query, params)
-	offset = (params.Page - 1) * params.Size
-
-	if err := query.Count(&response.Total).Error; err != nil {
-		return nil, err
-	}
 	var lists []model.Lookup
-	if params.Size != 0 {
-		query = query.
-			Offset(int(offset)).
-			Limit(int(params.Size))
-	}
 
 	if err := query.
 		Find(&lists).Error; err != nil {
-		return nil, err
+		return response, err
 	}
 	for _, it := range lists {
 		var item dto.GroupQueryResponseItem
@@ -165,23 +169,24 @@ func (s lookupRepository) FindLookupGroupsByValue(group_value string, params dto
 				item.Creator = &user.NickName
 			}
 		}
-		response.List = append(response.List, item)
+		response = append(response, item)
 	}
-	response.Page = params.Page
-	return &response, nil
+	return response, nil
 }
 
 func (s lookupRepository) FindLookupGroups(params *dto.GroupsQueryRequest) (*dto.GroupsQueryResponse, error) {
 	var response dto.GroupsQueryResponse
 	query := s.db.Model(&model.Lookup{})
-	// 删除默认查询
+	var statusMap = map[uint]string{
+		0: "status = 0",
+		2: "status = 2",
+	}
+	// 使用处
 	if params.Status != nil {
-		if *params.Status == 0 {
-			query = query.Where("status = 0")
+		if condition, ok := statusMap[*params.Status]; ok {
+			query = query.Where(condition)
 		} else if *params.Status == 1 {
-			query = query.Where("status = 1 or status = 3")
-		} else if *params.Status == 2 {
-			query = query.Where("status = 2")
+			query = query.Where("status = 1 OR status = 3")
 		}
 	}
 

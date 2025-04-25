@@ -13,7 +13,7 @@ type LookupService interface {
 	Update(id uint, params dto.LookupUpdateRequest) error
 	Get(id uint) (*dto.LookupGetIdReqponse, error)
 	Status(ctx context.Context, params *dto.LookupStatus) error
-	QueryGroup(group_value string, params dto.ListQueryRequest) (*dto.GroupQueryResponse, error)
+	QueryGroup(group_value string, params dto.ListQueryRequest) (dto.GroupQueryResponse, error)
 	QueryGroups(params dto.GroupsQueryRequest) (*dto.GroupsQueryResponse, error)
 	Sort(params dto.LookupSortRequest) error
 }
@@ -76,7 +76,7 @@ func (s *lookUpService) Get(id uint) (*dto.LookupGetIdReqponse, error) {
 func (s *lookUpService) Status(ctx context.Context, params *dto.LookupStatus) error {
 	return s.lookupRepo.Status(ctx, params)
 }
-func (s *lookUpService) QueryGroup(group_value string, params dto.ListQueryRequest) (*dto.GroupQueryResponse, error) {
+func (s *lookUpService) QueryGroup(group_value string, params dto.ListQueryRequest) (dto.GroupQueryResponse, error) {
 	return s.lookupRepo.FindLookupGroupsByValue(group_value, params)
 }
 
